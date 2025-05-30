@@ -21,7 +21,7 @@ public class ResourceMonitorAutoConfiguration {
     public ResourceMonitorAutoConfiguration(ResourceMonitorProperties properties, ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
         List<DataSource> dataSources = getDataSources();
-        this.resourceMonitor = ResourceMonitor.create(properties.getIntervalSeconds(), dataSources);
+        this.resourceMonitor = ResourceMonitor.create(properties.getIntervalSeconds(), dataSources, properties);
     }
 
     private List<DataSource> getDataSources() {
