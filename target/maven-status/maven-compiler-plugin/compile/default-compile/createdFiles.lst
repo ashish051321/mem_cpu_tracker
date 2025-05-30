@@ -1,4 +1,11 @@
-com\resourcemonitor\ResourceMonitor$1.class
+com\resourcemonitor\collectors\CpuMetricsCollector.class
+com\resourcemonitor\collectors\MetricsCollector.class
+com\resourcemonitor\collectors\MemoryMetricsCollector.class
+com\resourcemonitor\util\ColorCodes.class
+com\resourcemonitor\collectors\ThreadMetricsCollector.class
 com\resourcemonitor\ResourceMonitor.class
-com\resourcemonitor\ResourceMonitorAutoConfiguration.class
 com\resourcemonitor\ResourceMonitorProperties.class
+com\resourcemonitor\util\ColorCodes$1.class
+com\resourcemonitor\util\FormatUtils.class
+com\resourcemonitor\collectors\DatabaseMetricsCollector.class
+com\resourcemonitor\ResourceMonitorAutoConfiguration.class

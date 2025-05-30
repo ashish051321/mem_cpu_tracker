@@ -4,65 +4,52 @@ A Spring Boot library for monitoring system resources, thread states, and databa
 
 ## Features
 
-### 1. Memory Monitoring
-- Heap memory usage tracking
-- Non-heap memory monitoring
-- Memory utilization percentage with color-coded alerts
-- Visual representation of memory thresholds
+### Memory Monitoring
+- Heap memory usage with utilization percentage
+- Non-heap memory usage
+- Color-coded output based on memory utilization
 
-### 2. CPU Monitoring
-- System load average tracking
+### CPU Monitoring
+- System load average
 - CPU utilization percentage
-- Available processors monitoring
-- Color-coded CPU usage indicators
+- Available processors count
 
-### 3. Thread Monitoring
-- Active thread count tracking
-- Peak thread count monitoring
-- Total started threads count
-- Daemon thread statistics
-- Thread state distribution analysis
+### Thread Monitoring
+- Thread state distribution
+- Blocked thread detection
+- Thread pool statistics
 - Deadlock detection
-- High CPU thread identification
-- Blocked thread analysis
 
-### 4. Thread Pool Monitoring
-- Pool size tracking
-- Active thread count
-- Queued tasks monitoring
-- Completed tasks count
-- Thread pool utilization metrics
+### Database Connection Pool Monitoring
 
-### 5. Database Connection Pool Monitoring
-#### HikariCP Support
-- Active connections tracking
-- Idle connections monitoring
-- Total connections count
-- Connection utilization percentages
-- Pool configuration details
-- Connection timeout monitoring
-- Idle timeout tracking
-- Maximum lifetime settings
-- Threads awaiting connection detection
+The library provides comprehensive monitoring for various database connection pool implementations:
 
-#### Tomcat JDBC Pool Support
-- Active and idle connection tracking
-- Connection utilization metrics
-- Wait count and time monitoring
-- Pool configuration details
-- Connection testing status
-- Pool capacity alerts
+#### HikariCP
+- Active connections with utilization percentage
+- Idle connections
+- Total connections
+- Pool configuration:
+  - Connection timeout
+  - Idle timeout
+  - Maximum lifetime
+- Color-coded output for connection utilization
 
-#### Generic DataSource Support
-- Basic connection testing
-- Database product information
-- Version details
-- Connection status monitoring
+#### Tomcat JDBC Pool
+- Active connections with utilization percentage
+- Idle connections
+- Maximum active connections
+- Connection wait statistics:
+  - Total wait count
+  - Average wait time
+- Color-coded output for connection utilization
+
+#### Generic DataSource
+- Basic DataSource type information
+- Connection pool implementation details
 
 ## Configuration
 
-Add the following dependency to your `pom.xml`:
-
+### Maven Dependency
 ```xml
 <dependency>
     <groupId>com.resourcemonitor</groupId>
@@ -71,48 +58,31 @@ Add the following dependency to your `pom.xml`:
 </dependency>
 ```
 
-### Optional Dependencies
-For database connection pool monitoring, add one or both of these optional dependencies:
-
-```xml
-<!-- For HikariCP monitoring -->
-<dependency>
-    <groupId>com.zaxxer</groupId>
-    <artifactId>HikariCP</artifactId>
-    <optional>true</optional>
-</dependency>
-
-<!-- For Tomcat JDBC Pool monitoring -->
-<dependency>
-    <groupId>org.apache.tomcat</groupId>
-    <artifactId>tomcat-jdbc</artifactId>
-    <optional>true</optional>
-</dependency>
-```
-
 ### Properties Configuration
 
-Configure the monitor in your `application.properties` or `application.yml`:
-
+#### YAML Format
 ```yaml
 resource:
   monitor:
     enabled: true
     interval-seconds: 60
-    memory-monitoring: true
-    cpu-monitoring: true
-    thread-monitoring: true
-    thread-pool-monitoring: true
-    database-pool-monitoring: true
-    thread-state-distribution: true
-    deadlock-detection: true
-    high-cpu-threads: true
-    blocked-threads: true
+    memory-enabled: true
+    cpu-enabled: true
+    thread-enabled: true
+    database-enabled: true
+```
+
+#### Properties Format
+```properties
+resource.monitor.enabled=true
+resource.monitor.interval-seconds=60
+resource.monitor.memory-enabled=true
+resource.monitor.cpu-enabled=true
+resource.monitor.thread-enabled=true
+resource.monitor.database-enabled=true
 ```
 
 ## Output Format
-
-The monitor provides color-coded, structured output for easy reading:
 
 ### Memory Section
 ```
@@ -129,89 +99,91 @@ CPU - System Load Average: 2.50/4 (62.50%)
 
 ### Thread Section
 ```
-=== Thread Information ===
-Active Threads: 25
-Peak Thread Count: 30
-Total Started Threads: 100
-Daemon Threads: 15
-
-=== Thread State Distribution ===
-Threads in RUNNABLE state: 10
+=== Thread States ===
+Threads in RUNNABLE state: 15
 Threads in BLOCKED state: 2
 Threads in WAITING state: 8
-Threads in TIMED_WAITING state: 5
+
+=== Blocked Threads ===
+Thread: pool-1-thread-1
+  Blocked Time: 1500ms
+  Blocked by: pool-2-thread-1
 ```
 
 ### Database Pool Section
+
+#### HikariCP
 ```
-=== Database Connection Pools ===
-Pool 1 (HikariCP):
-  Active Connections: 5/10 (50.00%)
-  Idle Connections: 3/10 (30.00%)
-  Total Connections: 8
-  Min Idle: 2
-  Pool Configuration:
-    Connection Timeout: 30000 ms
-    Idle Timeout: 600000 ms
-    Max Lifetime: 1800000 ms
+=== HikariCP Pool Metrics ===
+Active Connections: 5/10 (50%)
+Idle Connections: 3
+Total Connections: 8
+Pool Configuration:
+  Connection Timeout: 30000ms
+  Idle Timeout: 600000ms
+  Max Lifetime: 1800000ms
 ```
 
-## Color Coding
-
-The output uses ANSI color codes for better visibility:
-- 🟢 Green: Normal/healthy state
-- 🟡 Yellow: Warning state
-- 🔴 Red: Critical state
-- 🔵 Blue: Section headers
-- 🟣 Purple: Main section headers
+#### Tomcat JDBC Pool
+```
+=== Tomcat JDBC Pool Metrics ===
+Active Connections: 3/10 (30%)
+Idle Connections: 5
+Max Active: 10
+Connection Wait Stats:
+  Total Wait Count: 2
+  Average Wait Time: 150ms
+```
 
 ## Best Practices
 
-1. **Interval Setting**
-   - For production: 60-300 seconds
-   - For development: 30-60 seconds
-   - For debugging: 10-30 seconds
+### Monitoring Intervals
+- For production: 60 seconds or more
+- For development: 30 seconds
+- For debugging: 10-15 seconds
 
-2. **Memory Monitoring**
-   - Monitor heap usage regularly
-   - Set up alerts for high memory usage
-   - Watch for memory leaks
+### Memory Monitoring
+- Monitor heap usage trends
+- Set up alerts for high utilization (>80%)
+- Watch for memory leaks
 
-3. **Thread Monitoring**
-   - Regularly check for deadlocks
-   - Monitor blocked threads
-   - Track thread pool utilization
+### Thread Monitoring
+- Monitor blocked thread patterns
+- Watch for thread pool saturation
+- Track deadlock occurrences
 
-4. **Database Pool Monitoring**
-   - Monitor connection utilization
-   - Watch for connection leaks
-   - Track connection wait times
+### Database Pool Monitoring
+- Monitor connection utilization
+- Watch for connection wait times
+- Track connection pool saturation
+- Monitor connection timeouts
+- Set up alerts for:
+  - High connection utilization (>80%)
+  - Long wait times (>1000ms)
+  - Frequent connection timeouts
 
 ## Troubleshooting
 
-1. **High Memory Usage**
-   - Check for memory leaks
-   - Monitor garbage collection
-   - Review heap dump if necessary
+### Memory Issues
+- High heap usage: Check for memory leaks
+- Growing non-heap: Monitor class loading
 
-2. **High CPU Usage**
-   - Identify high CPU threads
-   - Check for infinite loops
-   - Monitor system load
+### CPU Issues
+- High load average: Check for CPU-intensive operations
+- Spikes: Monitor thread activity
 
-3. **Thread Issues**
-   - Check for deadlocks
-   - Monitor blocked threads
-   - Review thread pool settings
+### Thread Issues
+- Blocked threads: Check for lock contention
+- High thread count: Monitor thread creation
 
-4. **Database Issues**
-   - Monitor connection pool utilization
-   - Check for connection leaks
-   - Review pool configuration
+### Database Connection Issues
+- Connection timeouts: Check pool size and network
+- High wait times: Monitor pool utilization
+- Connection leaks: Check connection handling
 
 ## Contributing
 
-Feel free to submit issues and enhancement requests!
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
